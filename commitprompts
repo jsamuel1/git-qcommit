@@ -1,0 +1,21 @@
+conventional,Write a concise and descriptive commit message in the conventional commit format (type: description)
+detailed,Create a detailed commit message with a summary line and bullet points for changes
+headline,Write a commit message in the style of a newspaper headline
+why,Create a commit message that explains the why behind the changes, not just the what
+angular,Write a commit message following the Angular commit convention
+solution,Create a commit message that includes both the problem solved and the solution implemented
+future,Write a commit message that would be easy for future developers to understand the context
+emoji,Create a commit message with emojis that represent the type of change
+fifty,Write a commit message that follows the 50/72 rule (50 char subject, 72 char body lines)
+ticket,Create a commit message that references the issue or ticket number
+breaking,Write a commit message that clearly separates breaking changes from regular changes
+debt,Create a commit message that explains the technical debt implications, if any
+performance,Write a commit message that highlights performance improvements or optimizations
+security,Create a commit message that explains security implications of the changes
+ux,Write a commit message that describes UI/UX changes from the user's perspective
+pirate,Write a commit message in pirate speak, with plenty of "arr"s and nautical references
+leet,Create a commit message in L33t Sp34k with numbers replacing letters
+rhyme,Write a commit message that rhymes like a short poem
+riddle,Create a commit message in the form of a riddle that hints at what was changed
+hero,Write a commit message as if you were a superhero who just saved the codebase
+10x,Create a commit message in the style of an overconfident 10X developer

@@ -1,0 +1,73 @@
+#!/bin/bash
+
+# git-qcommit: Git plugin to generate commit messages using Amazon Q
+# Usage: git qcommit [prompt_name|prompt]
+# If no prompt is provided, a random one will be selected from ~/.commitprompts
+# If a prompt_name is provided that matches a name in the CSV file, that prompt will be used
+
+set -e
+
+PROMPTS_FILE="$HOME/.commitprompts"
+
+# Check if there are staged changes
+if ! git diff --cached --quiet; then
+  # If prompt is provided as argument, use it
+  if [ $# -gt 0 ]; then
+    # Check if the argument matches a prompt name in the CSV file
+    PROMPT_NAME="$1"
+    CSV_PROMPT=$(grep "^$PROMPT_NAME," "$PROMPTS_FILE" 2>/dev/null | cut -d',' -f2-)
+
+    if [ -n "$CSV_PROMPT" ]; then
+      PROMPT="$CSV_PROMPT"
+      echo "Using prompt style: $PROMPT_NAME"
+    else
+      PROMPT="$*"
+    fi
+  else
+    # Check if prompts file exists
+    if [ -f "$PROMPTS_FILE" ]; then
+      # Get a random line from the prompts file
+      RANDOM_LINE=$(shuf -n 1 "$PROMPTS_FILE")
+      PROMPT=$(echo "$RANDOM_LINE" | cut -d',' -f2-)
+      PROMPT_NAME=$(echo "$RANDOM_LINE" | cut -d',' -f1)
+      echo "Using random prompt style: $PROMPT_NAME"
+    else
+      echo "Error: No prompt provided and $PROMPTS_FILE does not exist."
+      echo "Please provide a prompt as an argument or create the prompts file."
+      exit 1
+    fi
+  fi
+
+  echo "Generating commit message using prompt: '$PROMPT'"
+
+  # Create a temporary file for the commit message
+  TEMP_FILE=$(mktemp /tmp/git-qcommit-XXXXXX)
+
+  # Generate commit message using Amazon Q and write to temporary file
+  echo -e "Based on the staged git changes, generate a descriptive git commit message and write it to $TEMP_FILE. Feel free to use appropriate gitmoji/emoji icons. Include what was changed and why. Don't include any markdown formatting or code blocks.\n\nPrompt: $PROMPT" | q chat -a
+
+  # Check if the temporary file exists and has content
+  if [ -s "$TEMP_FILE" ]; then
+    # Show the generated message and ask for confirmation
+    echo -e "\nGenerated commit message:"
+    cat "$TEMP_FILE"
+    echo ""
+
+    read -p "Do you want to commit with this message? (y/n): " confirm
+    if [[ $confirm =~ ^[Yy]$ ]]; then
+      git commit -F "$TEMP_FILE"
+      echo "Changes committed successfully!"
+    else
+      echo "Commit aborted."
+    fi
+  else
+    echo "Error: Failed to generate commit message or the message is empty."
+    exit 1
+  fi
+
+  # Clean up the temporary file
+  rm -f "$TEMP_FILE"
+else
+  echo "No staged changes found. Please stage your changes first with 'git add'."
+  exit 1
+fi
