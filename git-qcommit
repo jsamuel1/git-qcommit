@@ -44,13 +44,20 @@ if ! git diff --cached --quiet; then
   TEMP_FILE=$(mktemp /tmp/git-qcommit-XXXXXX)
 
   # Generate commit message using Amazon Q and write to temporary file
-  echo -e "Based on the staged git changes, generate a descriptive git commit message and write it to $TEMP_FILE. Feel free to use appropriate gitmoji/emoji icons. Include what was changed and why. Don't include any markdown formatting or code blocks.\n\nPrompt: $PROMPT" | q chat -a
+  echo -e "Based on the staged git changes, generate a descriptive git commit \
+message and write it to $TEMP_FILE. Feel free to use appropriate gitmoji/emoji \
+icons. Include what was changed and why. Don't include any markdown formatting \
+or code blocks.\n\nPrompt: $PROMPT" | q chat \
+    --no-interactive \
+    --trust-tools=fs_read,fs_write,execute_bash,git___git_add,git___git_diff,\
+git___git_diff_staged,git___git_diff_unstaged,git___git_log,git___git_show,\
+git___git_status
 
   # Check if the temporary file exists and has content
   if [ -s "$TEMP_FILE" ]; then
     # Show the generated message and ask for confirmation
-    echo -e "\nGenerated commit message:"
-    cat "$TEMP_FILE"
+    echo -e "\nGenerated commit message:" && \
+    cat "$TEMP_FILE" && \
     echo ""
 
     read -p "Do you want to commit with this message? (y/n): " confirm
