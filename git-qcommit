@@ -9,6 +9,11 @@ set -e
 
 PROMPTS_FILE="$HOME/.commitprompts"
 
+# Define trusted tools for Amazon Q
+TRUSTED_TOOLS="fs_read,fs_write,execute_bash,git___git_add,git___git_diff,\
+git___git_diff_staged,git___git_diff_unstaged,git___git_log,git___git_show,\
+git___git_status"
+
 # Check if there are staged changes
 if ! git diff --cached --quiet; then
   # If prompt is provided as argument, use it
@@ -43,15 +48,16 @@ if ! git diff --cached --quiet; then
   # Create a temporary file for the commit message
   TEMP_FILE=$(mktemp /tmp/git-qcommit-XXXXXX)
 
+  # Define the initial prompt for Amazon Q
+  INITIAL_PROMPT="Based on the staged git changes, generate a descriptive git \
+commit message and write it to $TEMP_FILE. Feel free to use appropriate \
+gitmoji/emoji icons. Include what was changed and why. Don't include any \
+markdown formatting or code blocks.
+
+Prompt: $PROMPT"
+
   # Generate commit message using Amazon Q and write to temporary file
-  echo -e "Based on the staged git changes, generate a descriptive git commit message \
-and write it to $TEMP_FILE. Feel free to use appropriate gitmoji/emoji icons. \
-Include what was changed and why. Don't include any markdown formatting or code \
-blocks.\n\nPrompt: $PROMPT" | q chat -a \
-    --no-interactive \
-    --trust-tools=fs_read,fs_write,execute_bash,internal_command,thinking,\
-fetch___fetch,git___git_add,git___git_diff,git___git_diff_staged,\
-git___git_diff_unstaged,git___git_log,git___git_show,git___git_status
+  echo -e "$INITIAL_PROMPT" | q chat --no-interactive --trust-tools="$TRUSTED_TOOLS"
 
   # Check if the temporary file exists and has content
   if [ -s "$TEMP_FILE" ]; then
