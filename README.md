@@ -17,6 +17,28 @@ A Git plugin that generates descriptive commit messages using kiro-cli AI assist
 
 ## Installation
 
+### Quick Install (Recommended)
+
+Run the following command to automatically install git-qcommit:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/jsamuel1/git-qcommit/main/install.sh | sh
+```
+
+This will:
+- Download the git-qcommit script
+- Install it to `~/.local/bin/`
+- Make it executable
+- Check if `~/.local/bin` is in your PATH
+
+If `~/.local/bin` is not in your PATH, add this line to your shell configuration file (`~/.bashrc`, `~/.zshrc`, or similar):
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+### Manual Installation
+
 1. Clone or download this repository
 2. Make the script executable:
    ```bash
@@ -26,10 +48,13 @@ A Git plugin that generates descriptive commit messages using kiro-cli AI assist
    ```bash
    sudo cp git-qcommit /usr/local/bin/
    ```
-4. Copy the commit prompts file to your home directory:
-   ```bash
-   cp commitprompts ~/.commitprompts
-   ```
+
+### Optional: Install Commit Prompts
+
+Optionally, copy the commit prompts file to your home directory to enable various prompt styles:
+```bash
+curl -fsSL https://raw.githubusercontent.com/jsamuel1/git-qcommit/main/commitprompts -o ~/.commitprompts
+```
 
 ## Usage
 
